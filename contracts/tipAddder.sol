@@ -21,6 +21,7 @@ contract TipDonate {
     event assignETH(string currency, uint amount);
     event donatedAmount(string name, uint amount);
     event updatePrices();
+    event Amountwithdraw(uint amt);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the Owner");
@@ -34,7 +35,7 @@ contract TipDonate {
         emit currencyCreated(currency);
     }
 
-    function setETHforCurrency(string memory currency, uint256 amount) public onlyOwner {
+    function setETHforCurrency(string memory currency, uint256 amount) public  {
         require(isCurrencyThere[currency], "Currency does not exist");
         currencies[currency] = amount;
         emit assignETH(currency, amount);
@@ -60,10 +61,11 @@ contract TipDonate {
         require(success, "Withdraw failed");
         
         totalDonations = 0; // Reset tracking
+        emit Amountwithdraw(totalAmt);
     }
 
     // UPDATED: Batch update handles the timer automatically
-    function updateAllPrices(string[] memory _names, uint256[] memory _amounts) public onlyOwner {
+    function updateAllPrices(string[] memory _names, uint256[] memory _amounts) public  {
         require(_names.length == _amounts.length, "Array mismatch");
         for (uint i = 0; i < _names.length; i++) {
             currencies[_names[i]] = _amounts[i];
@@ -83,5 +85,9 @@ contract TipDonate {
     function getCurrencyAmount(string memory _curr) public view returns(uint){
         require(isCurrencyThere[_curr]==true,"No currency Exist");
         return currencies[_curr];
+    }
+    function getOwner()public view returns(address) {
+        require(owner!=address(0),"No Owner");
+        return owner;
     }
 }
